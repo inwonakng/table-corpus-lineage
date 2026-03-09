@@ -1,0 +1,33 @@
+dataset:
+  id: OTT-QA
+  label: OTT-QA
+  year: 2020
+  tags:
+    - Table QA
+    - Table Retrieval
+    - Extraction
+    - Reasoning
+    - Multi-Hop
+    - Multi-Table
+  venue: ICLR 2021
+  url: https://arxiv.org/abs/2010.10439
+  notes: >
+    Open-domain QA requiring multi-hop inference across 400K+ Wikipedia tables
+    and 5M+ Wikipedia passages, with no ground-truth evidence provided at query
+    time. Re-annotated from HybridQA with de-contextualized questions and
+    hyperlink-free tables to simulate a more general retrieval scenario.
+
+relations:
+  - from: OTT-QA
+    to: HybridQA
+    type: derived_from
+    note: >
+      OTT-QA re-annotates questions from HybridQA, de-contextualizing them to be
+      standalone and removing ground-truth hyperlinks, while expanding the retrieval
+      corpus to 400K+ tables and 5M+ passages.
+  - from: OTT-QA
+    to: Wikipedia
+    type: uses_source
+    note: >
+      Tables (400K+) and passages (5M+) are crawled directly from Wikipedia to
+      form the open retrieval corpus.

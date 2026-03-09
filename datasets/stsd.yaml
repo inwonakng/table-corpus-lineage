@@ -1,0 +1,44 @@
+dataset:
+  id: STSD
+  label: Semantic Table Search Dataset (STSD)
+  year: 2024
+  tags:
+    - Table Retrieval
+    - Entity Linking
+    - Multi-Table
+  venue: SIGIR 2024
+  url: https://doi.org/10.1145/3626772.3657877
+  notes: >
+    Large-scale QbE semantic table search corpus built from two Wikipedia table
+    snapshots (WT'13: 9,296 queries / 238K tables / ~610K relevance annotations;
+    WT'19: 2,560 queries / 457K tables / 958K annotations). Ground truth is
+    derived automatically from shared Wikipedia categories and navigation links
+    (Jaccard similarity), validated via a crowdsourced user study (avg. Kendall
+    Tau 0.47 vs. human annotations). Tables are entity-linked to DBpedia via
+    isPrimaryTopicOf; the largest annotated table-search corpus to date.
+
+relations:
+  - from: STSD
+    to: WikiTables
+    type: uses_source
+    note: >
+      The WT'13 STSD snapshot filters the ~1.6M-table WikiTables 2013 corpus,
+      retaining only tables with ≥10 unique DBpedia entity links, yielding
+      238,038 data-lake tables and 9,296 query tables; Wikipedia categories
+      and navigation links are additionally crawled per page.
+
+  - from: STSD
+    to: WikiTables_2019
+    type: uses_source
+    note: >
+      The WT'19 STSD snapshot filters 714,632 tables from the 2019 Wikipedia
+      snapshot, retaining tables with ≥10 unique DBpedia entity links, yielding
+      457,714 data-lake tables and 2,560 query tables.
+
+  - from: STSD
+    to: DBpedia
+    type: misc
+    note: >
+      Table cell values are linked to DBpedia entities via Wikipedia's
+      isPrimaryTopicOf property; DBpedia entity types (rdf:type) and RDF2Vec
+      embeddings drive the semantic relevance scoring baselines (STST, STSE).

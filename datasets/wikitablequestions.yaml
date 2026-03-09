@@ -1,0 +1,25 @@
+dataset:
+  id: WikiTableQuestions
+  label: WikiTableQuestions
+  year: 2015
+  tags:
+    - Table QA
+    - Reasoning
+    - Multi-Step
+    - Semi‑Structured Tables
+  venue: ACL 2015
+  url: https://arxiv.org/abs/1508.00305
+  notes: >
+    22K question–answer pairs over 2,108 Wikipedia HTML tables, collected via a
+    two-stage AMT pipeline. Questions require compositional reasoning (comparison,
+    aggregation, superlatives, arithmetic, multi-hop lookup) over semi-structured,
+    non-normalized tables; all column headers and cell values are unseen at test time.
+
+relations:
+  - from: WikiTableQuestions
+    to: Wikipedia
+    type: uses_source
+    note: >
+      Tables were randomly sampled from Wikipedia HTML pages, filtered to those with
+      at least 8 rows and 5 columns; non-textual content was stripped and merged cells
+      were unmerged before annotation.

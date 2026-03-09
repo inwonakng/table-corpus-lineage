@@ -1,0 +1,40 @@
+sources:
+  - id: Wikipedia
+    label: Wikipedia
+
+  - id: WikiTables
+    label: WikiTables (Bhagavatula et al., 2013/2015)
+    notes: >
+      The dataset first appeared at a workshop (2013), but was later
+      revised and updated for TabEl (2015).
+
+  - id: WikiTables_2019
+    label: Wikipedia Tables 2019 Snapshot
+
+  - id: DBpedia
+    label: DBpedia
+
+  - id: GoogleSearchLogs
+    label: Google Search Logs
+    notes: Used by Natural Questions (2019)
+
+  - id: Freebase
+    label: Freebase
+    notes: Knowledge base provided by Google
+
+relations:
+  - from: WikiTables_2019
+    to: Wikipedia
+    type: uses_source
+    note: >
+      A 2019 crawl of English Wikipedia, extracting 714,632 tables from
+      Wikipedia pages (described in Bleifuß et al. 2021, SEA-Data @ VLDB 2021).
+
+  - from: WikiTables
+    to: Wikipedia
+    type: uses_source
+    note: >
+      WikiTables parses the English Wikipedia XML dump, extracting tables
+      enclosed in Wiki Markup {| … |} tags (plus template-rendered tables),
+      then filters to HTML class="wikitable" only to exclude infoboxes, TOC,
+      and metadata boxes; yields ~1.4M data tables across ~643K pages.

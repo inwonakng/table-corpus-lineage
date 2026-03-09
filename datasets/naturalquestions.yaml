@@ -1,0 +1,29 @@
+dataset:
+  id: NaturalQuestions
+  label: Natural Questions
+  year: 2019
+  tags:
+    - Question Answering
+    - Extraction
+    - Reasoning
+  venue: TACL 2019
+  url: https://aclanthology.org/Q19-1026/
+  notes: >
+    A large-scale question answering benchmark built from real anonymized, aggregated
+    Google search queries. Each query is paired with a Wikipedia page from the top 5
+    search results, and annotators identify both a long answer (e.g., a paragraph) and
+    a short answer (e.g., specific entities), or mark that no answer is present.
+
+relations:
+  - from: NaturalQuestions
+    to: GoogleSearchLogs
+    type: uses_source
+    note: >
+      The questions in the dataset are real anonymized, aggregated queries that were issued
+      by users to the Google search engine.
+  - from: NaturalQuestions
+    to: Wikipedia
+    type: uses_source
+    note: >
+      For each query, a Wikipedia page from the top 5 Google search results is retrieved
+      and presented to annotators as the evidence document to find the long and short answers.

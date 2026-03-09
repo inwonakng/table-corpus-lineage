@@ -1,0 +1,35 @@
+dataset:
+  id: TabFact
+  label: TabFact
+  year: 2020
+  tags:
+    - Fact Verification
+    - Classification
+    - Reasoning
+    - Numerical Reasoning
+  venue: ICLR 2020
+  url: https://openreview.net/forum?id=rkeJRhNYDH
+  notes: >
+    118K human-annotated statements (ENTAILED/REFUTED) over 16K Wikipedia
+    tables drawn from WikiTables. Uniquely requires both soft linguistic
+    reasoning and hard symbolic reasoning; collected via a two-channel
+    AMT process (simple/complex) with a negative rewriting strategy to
+    minimize annotation artifacts.
+
+relations:
+  - from: TabFact
+    to: WikiTables
+    type: uses_source
+    note: >
+      Tables are extracted from the WikiTables corpus (Bhagavatula et al.,
+      2013), filtered to ~16K clean Wikipedia tables with fewer than 50 rows
+      and 10 columns by removing multirow/multicolumn and LaTeX-symbol-heavy
+      tables.
+
+  - from: TabFact
+    to: WikiTableQuestions
+    type: uses_method_of
+    note: >
+      Annotation methodology follows WikiTableQuestions: AMT workers are
+      provided Wikipedia title captions as context, and the same quality-
+      control and worker-filtering procedures are adopted.

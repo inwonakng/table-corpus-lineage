@@ -1,0 +1,24 @@
+dataset:
+  id: ToTTo
+  label: ToTTo
+  year: 2020
+  tags:
+    - Table2Text
+    - Generation (Free-Form)
+    - Reasoning
+    - Numerical Reasoning
+  venue: EMNLP 2020
+  url: https://arxiv.org/abs/2004.14373
+  notes: >
+    Controlled table-to-text generation over Wikipedia tables with highlighted cells.
+    Annotators revised existing Wikipedia sentences to produce faithful one-sentence
+    descriptions, making faithfulness to source data a central evaluation challenge.
+
+relations:
+  - from: ToTTo
+    to: Wikipedia
+    type: uses_source
+    note: >
+      Tables and candidate sentences are sourced directly from Wikipedia; annotators
+      select and highlight cells, then revise the associated Wikipedia sentence into
+      a faithful description.

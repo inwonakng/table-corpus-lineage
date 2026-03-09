@@ -1,0 +1,28 @@
+dataset:
+  id: TURL
+  label: TURL
+  year: 2020
+  tags:
+    - Table Understanding
+    - Entity Linking
+    - Cell/Column Annotation
+    - Relation Extraction
+    - Data Generation
+    - Data Cleaning
+  venue: VLDB 2021
+  url: https://arxiv.org/abs/2006.14806
+  notes: >
+    A benchmark and pre-training corpus for relational table understanding. It includes a large-scale unlabeled table corpus for representation learning and labeled datasets for 6 downstream tasks: entity linking, column type annotation, relation extraction, row population, cell filling, and schema augmentation.
+
+relations:
+  - from: TURL
+    to: WikiTables
+    type: derived_from
+    note: >
+      TURL builds its pre-training and task-specific evaluation datasets by filtering, processing, and augmenting the TabEL dataset (also known as the WikiTable corpus).
+
+  - from: TURL
+    to: Freebase
+    type: uses_source
+    note: >
+      TURL leverages Freebase to obtain semantic types, relational knowledge, and ground truth annotations for the entities appearing in the tables.

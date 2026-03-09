@@ -1,0 +1,23 @@
+dataset:
+  id: NQ-Tables
+  label: NQ-Tables
+  year: 2021
+  tags:
+    - Table QA
+    - Table Retrieval
+    - Open-Domain QA
+    - Extraction
+  venue: NAACL 2021
+  url: https://aclanthology.org/2021.naacl-main.43/
+  notes: >
+    An open-domain table QA dataset created by extracting a table-specific
+    subset of the Natural Questions dataset. The task requires retrieving the
+    correct table from a large corpus and extracting a short-text answer.
+
+relations:
+  - from: NQ-Tables
+    to: NaturalQuestions
+    type: samples_from
+    note: >
+      NQ-Tables is built by extracting a subset of the Natural Questions dataset
+      consisting of (question, table) pairs where the answers are found in a table.

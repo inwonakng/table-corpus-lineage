@@ -1,0 +1,25 @@
+dataset:
+  id: FeTaQA
+  label: FeTaQA
+  year: 2021
+  tags:
+    - Table QA
+    - Generation (Free-Form)
+    - Reasoning
+    - Multi-Hop
+  venue: TACL 2022
+  url: https://arxiv.org/abs/2104.00369
+  notes: >
+    Free-form answer generation over Wikipedia tables. Unlike extractive QA,
+    answers require synthesis across multiple cells and are written in natural
+    language sentences.
+
+relations:
+  - from: FeTaQA
+    to: ToTTo
+    type: samples_from
+    note: >
+      FeTaQA is built by sampling {table, sentence} pairs directly from ToTTo,
+      then having annotators write questions over those tables; the ToTTo sentences
+      become the free-form answers and the highlighted cell annotations become
+      supporting denotations.

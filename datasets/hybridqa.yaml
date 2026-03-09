@@ -1,0 +1,25 @@
+dataset:
+  id: HybridQA
+  label: HybridQA
+  year: 2020
+  tags:
+    - Table QA
+    - Extraction
+    - Reasoning
+    - Multi-Hop
+    - Multi-Modal
+  venue: EMNLP 2020 (Findings)
+  url: https://arxiv.org/abs/2004.07347
+  notes: >
+    Multi-hop QA requiring simultaneous reasoning over Wikipedia tables and
+    free-form text passages linked to table entities. Questions are designed so
+    that neither modality alone is sufficient to answer them, exposing a critical
+    gap in single-modality QA systems.
+
+relations:
+  - from: HybridQA
+    to: Wikipedia
+    type: uses_source
+    note: >
+      Tables are drawn from Wikipedia and each table entity is linked to its
+      corresponding Wikipedia passage, forming the heterogeneous evidence corpus.
