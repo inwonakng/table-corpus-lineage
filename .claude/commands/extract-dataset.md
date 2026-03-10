@@ -49,6 +49,7 @@ extends -- `from` adds to `to` (new splits, tasks, or annotations on the same da
 derived_from -- `from` is constructed by transforming `to`'s data
 uses_method_of -- `from` reuses/borrows from the construction or annotation methodology of `to`
 uses_source -- `from` is sampled from the raw corpus `to` (to should be a source node). note is REQUIRED TO specify how exactly it is scraped.
+annotated_with -- uses the source to annotate/label the dataset (e.g. entity linking to DBPedia)
 misc — anything else; note is REQUIRED
 
 ### Tagging system

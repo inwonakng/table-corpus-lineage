@@ -37,7 +37,7 @@ relations:
 
   - from: STSD
     to: DBpedia
-    type: misc
+    type: annotated_with
     note: >
       Table cell values are linked to DBpedia entities via Wikipedia's
       isPrimaryTopicOf property; DBpedia entity types (rdf:type) and RDF2Vec

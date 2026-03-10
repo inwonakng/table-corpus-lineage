@@ -23,6 +23,6 @@ relations:
 
   - from: TURL
     to: Freebase
-    type: uses_source
+    type: annotated_with
     note: >
       TURL leverages Freebase to obtain semantic types, relational knowledge, and ground truth annotations for the entities appearing in the tables.

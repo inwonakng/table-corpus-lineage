@@ -21,6 +21,7 @@ EDGE_COLORS = {
     "derived_from": "#f97316",  # orange
     "uses_method_of": "#a855f7",  # purple
     "uses_source": "#64748b",  # slate
+    "annotated_with": "#06b6d4",  # cyan
     "misc": "#f43f5e",  # rose
 }
 
@@ -30,6 +31,7 @@ EDGE_LABELS = {
     "derived_from": "derived from",
     "uses_method_of": "uses method of",
     "uses_source": "uses source",
+    "annotated_with": "annotated with",
     "misc": "misc",
 }
 DATASETS_DIR = Path("datasets")

@@ -10,12 +10,13 @@ An interactive dashboard that maps the **provenance and relationships among tabu
 
 Each node in the graph is either a **benchmark dataset** (blue rectangle) or a **raw source corpus** (grey diamond). Directed edges capture how datasets relate to each other:
 
-- `**samples_from**`: draws a subset of examples from the parent
-- `**extends**`: adds labels, splits, or tasks on top of the parent
-- `**derived_from**`: substantively re-processes or re-annotates the parent
-- `**uses_method_of**`: borrows a collection or annotation methodology
-- `**uses_source**`: pulls raw text/data from a non-benchmark corpus
-- `**misc**`: any other meaningful relationship
+- **`samples_from`**: draws a subset of examples from the parent
+- **`extends`**: adds labels, splits, or tasks on top of the parent
+- **`derived_from`**: substantively re-processes or re-annotates the parent
+- **`uses_method_of`**: borrows a collection or annotation methodology
+- **`uses_source`**: pulls raw text/data from a non-benchmark corpus
+- **`annotated_with`**: uses the source to annotate/label the dataset (e.g. entity linking to DBPedia)
+- **`misc`**: any other meaningful relationship
 
 Click a node to see its metadata (year, venue, paper URL, tags, notes). Click an edge to see the relationship type and any associated notes. Use the tag filter in the sidebar to highlight subsets of the graph.
 
