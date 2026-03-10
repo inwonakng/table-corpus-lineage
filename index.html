@@ -396,7 +396,7 @@
       <div class="legend-item"><div class="legend-line" style="background:#f97316"></div>derived from</div>
       <div class="legend-item"><div class="legend-line" style="background:#a855f7"></div>uses method of</div>
       <div class="legend-item"><div class="legend-line" style="background:#64748b"></div>uses source</div>
-      <div class="legend-item"><div class="legend-line" style="background:#f43f5e"></div>misc</div>
+      <div class="legend-item"><div class="legend-line" style="background:#06b6d4"></div>annotated with</div>
         <div class="legend-sources">
           <div class="legend-diamond"></div>
           raw source (non-benchmark)
@@ -810,8 +810,8 @@ relations:
       "id": "e6",
       "source": "TURL",
       "target": "Freebase",
-      "edgeType": "uses_source",
-      "color": "#64748b",
+      "edgeType": "annotated_with",
+      "color": "#06b6d4",
       "note": "TURL leverages Freebase to obtain semantic types, relational knowledge, and ground truth annotations for the entities appearing in the tables.\n"
     }
   },
@@ -870,8 +870,8 @@ relations:
       "id": "e12",
       "source": "STSD",
       "target": "DBpedia",
-      "edgeType": "misc",
-      "color": "#f43f5e",
+      "edgeType": "annotated_with",
+      "color": "#06b6d4",
       "note": "Table cell values are linked to DBpedia entities via Wikipedia's isPrimaryTopicOf property; DBpedia entity types (rdf:type) and RDF2Vec embeddings drive the semantic relevance scoring baselines (STST, STSE).\n"
     }
   },
@@ -926,7 +926,7 @@ relations:
     }
   }
 ];
-      const EDGE_COLORS = {"samples_from": "#3b82f6", "extends": "#22c55e", "derived_from": "#f97316", "uses_method_of": "#a855f7", "uses_source": "#64748b", "misc": "#f43f5e"};
+      const EDGE_COLORS = {"samples_from": "#3b82f6", "extends": "#22c55e", "derived_from": "#f97316", "uses_method_of": "#a855f7", "uses_source": "#64748b", "annotated_with": "#06b6d4", "misc": "#f43f5e"};
 
       const cy = cytoscape({
         container: document.getElementById("cy"),
