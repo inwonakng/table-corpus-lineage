@@ -1,7 +1,7 @@
 [project]
 authors = [{ name = "inwonakng", email = "inwon.kang04@gmail.com" }]
 dependencies = ["pyyaml>=6.0.3,<7"]
-name = "benchmark-lineage"
+name = "table-corpus-lineage"
 requires-python = ">= 3.11"
 version = "0.1.0"
 
