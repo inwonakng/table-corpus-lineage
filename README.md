@@ -2,7 +2,7 @@
 
 An interactive dashboard that maps the **provenance and relationships among tabular benchmark datasets**, at the intersection of NLP and database management research.
 
-[Live dashboard →](https://inwonakng.github.io/table-corpus-lineage/dashboard.html) _(update URL once hosted)_
+[Live dashboard](https://inwonakng.github.io/table-corpus-lineage/)
 
 ---
 
@@ -10,16 +10,58 @@ An interactive dashboard that maps the **provenance and relationships among tabu
 
 Each node in the graph is either a **benchmark dataset** (blue rectangle) or a **raw source corpus** (grey diamond). Directed edges capture how datasets relate to each other:
 
-| Edge type        | Semantics                                             |
-| ---------------- | ----------------------------------------------------- |
-| `samples_from`   | draws a subset of examples from the parent            |
-| `extends`        | adds labels, splits, or tasks on top of the parent    |
-| `derived_from`   | substantively re-processes or re-annotates the parent |
-| `uses_method_of` | borrows a collection or annotation methodology        |
-| `uses_source`    | pulls raw text/data from a non-benchmark corpus       |
-| `misc`           | any other meaningful relationship                     |
+- `**samples_from**`: draws a subset of examples from the parent
+- `**extends**`: adds labels, splits, or tasks on top of the parent
+- `**derived_from**`: substantively re-processes or re-annotates the parent
+- `**uses_method_of**`: borrows a collection or annotation methodology
+- `**uses_source**`: pulls raw text/data from a non-benchmark corpus
+- `**misc**`: any other meaningful relationship
 
 Click a node to see its metadata (year, venue, paper URL, tags, notes). Click an edge to see the relationship type and any associated notes. Use the tag filter in the sidebar to highlight subsets of the graph.
+
+## Tagging System
+
+We also use a simple taxonomy to describe the type of tasks the dataset handles. We divide this into 4 categories: `task`, `input`, `output`, and `challenge`.
+
+**Goals**
+
+- Data Discovery & Integration
+  - **`Table Unionability Search`**: Finding tables that can be concatenated/appended to a query table.
+  - **`Table Retrieval`**: Fetching relevant tables from a large corpus to answer a user query or augment a prompt. This is only applicable if the dataset involves _searching_ for tables before the downstream.
+  - **`Schema Matching`**: Aligning columns or structures between different databases or tables.
+  - **`Entity Linking`**: Mapping table cells (mentions) to entities in a knowledge base (e.g., Wikipedia).
+  - **`Relation Extraction`**: Mapping column pairs to triples in knowledge graph forms (i.e. triples)
+- Question Answering & Verification
+  - **`Table QA`**: Answering natural language questions based on tabular data.
+  - **`Fact Verification`**: Determining whether a given natural language claim is supported or refuted by a table (e.g., TabFact).
+- Translation & Semantic Parsing
+  - **`Text2SQL`**: Translating natural language questions into executable SQL queries.
+  - **`Table2Text`**: Converting structured table rows/data into descriptive natural language sentences or summaries (e.g., generating a bio from a Wikipedia infobox).
+- Data Preparation & Curation
+  - **`Cell/Column Annotation`**: Predicting the semantic type of a column or the entity type of a cell.
+  - **`Data Cleaning`**: Imputing missing values or correcting erroneous tabular data.
+  - **`Data Generation`**: generating synthetic data given the input.
+
+**Input**
+
+- **`Semi-Structured Tables`**: The input _is_ tabular data, but might be presented in a semi-structured format (e.g., HTML tables) rather than as clean CSV or database tables.
+
+**Output**
+
+- **`Classification`**: Outputting a discrete label (e.g., True/False for verification, or a specific category).
+- **`Extraction`**: Pulling an exact span of text or specific cell value directly from the table to form the answer.
+- **`Generation (Free-Form)`**: Producing open-ended, conversational, or explanatory text (e.g., an LLM explaining _why_ a trend is happening in the data, or giving a verbose QA response).
+- **`Generation (Constrained)`**: Producing text that must adhere to a strict syntax or formal language (e.g., generating valid SQL, JSON, or specific API calls).
+- **`Agentic / Tool-Use`**: Generating code (like Python/Pandas), executing it in an environment, and using the result to answer.
+
+**Challenges**
+
+- **`Reasoning`**: Requires logical deduction beyond simple lookup (e.g., filtering, argmax, comparisons).
+- **`Numerical Reasoning`**: Requires math operations (sum, average, difference, counting) on table values.
+- **`Multi-Hop`**: Requires bridging information across multiple rows, columns, or intermediate steps to arrive at the answer.
+- **`Multi-Step`**: Requires a sequence of operations or reasoning steps, not just one.
+- **`Multi-Table`**: The context requires routing, joining, or comparing data across multiple distinct tables.
+- **`Multi-Modal`**: The input is not purely text/CSV; it involves visually rich layouts, PDFs, or table images.
 
 ---
 

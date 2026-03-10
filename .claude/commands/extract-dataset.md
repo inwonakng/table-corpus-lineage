@@ -53,9 +53,10 @@ misc — anything else; note is REQUIRED
 
 ### Tagging system
 
-The tagging system is composed of three main questions:
+The tagging system is composed of four main questions:
 
 - what is the goal of this paper?
+- what is the expected input format? (only applicable if not pure table)
 - what is the expected output format?
 - what are additional challenges added?
 

@@ -1,399 +1,506 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Benchmark Lineage</title>
-  <script src="https://unpkg.com/cytoscape@3.29.2/dist/cytoscape.min.js"></script>
-  <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
-  <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Benchmark Lineage</title>
+    <script src="https://unpkg.com/cytoscape@3.29.2/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      display: flex;
-      height: 100vh;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        display: flex;
+        height: 100vh;
+        background: #0f172a;
+        color: #e2e8f0;
+      }
 
-    #graph-area {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-    }
+      #graph-area {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+      }
 
-    #cy { width: 100%; height: 100%; }
+      #cy {
+        width: 100%;
+        height: 100%;
+      }
 
-    #toolbar {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      display: flex;
-      gap: 6px;
-      z-index: 10;
-    }
+      #toolbar {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        gap: 6px;
+        z-index: 10;
+      }
 
-    button {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #e2e8f0;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    button:hover { background: #334155; }
+      button {
+        background: #1e293b;
+        border: 1px solid #334155;
+        color: #e2e8f0;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #334155;
+      }
 
-    #sidebar {
-      width: 300px;
-      min-width: 300px;
-      background: #1e293b;
-      border-left: 1px solid #334155;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+      #sidebar {
+        width: 300px;
+        min-width: 300px;
+        background: #1e293b;
+        border-left: 1px solid #334155;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
 
-    #sidebar-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 11px;
-      font-weight: 600;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
+      #sidebar-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid #334155;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
 
-    #filter-panel {
-      padding: 14px 16px 10px;
-      display: flex;
-      flex-direction: column;
-      height: 180px;
-      min-height: 60px;
-      overflow: hidden;
-    }
+      #filter-panel {
+        padding: 14px 16px 10px;
+        display: flex;
+        flex-direction: column;
+        height: 180px;
+        min-height: 60px;
+        overflow: hidden;
+      }
 
-    #filter-panel h3 {
-      font-size: 10px;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
+      #filter-panel h3 {
+        font-size: 10px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 8px;
+        flex-shrink: 0;
+      }
 
-    #tag-search {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #e2e8f0;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      outline: none;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-    #tag-search::placeholder { color: #475569; }
-    #tag-search:focus { border-color: #64748b; }
+      #tag-search {
+        background: #0f172a;
+        border: 1px solid #334155;
+        color: #e2e8f0;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 11px;
+        outline: none;
+        margin-bottom: 8px;
+        flex-shrink: 0;
+      }
+      #tag-search::placeholder {
+        color: #475569;
+      }
+      #tag-search:focus {
+        border-color: #64748b;
+      }
 
-    #filter-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      overflow-y: auto;
-      align-content: flex-start;
-    }
+      #filter-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        overflow-y: auto;
+        align-content: flex-start;
+      }
 
-    #panel-resize-handle {
-      height: 5px;
-      cursor: ns-resize;
-      background: #334155;
-      flex-shrink: 0;
-      transition: background 0.15s;
-    }
-    #panel-resize-handle:hover { background: #475569; }
+      #panel-resize-handle {
+        height: 5px;
+        cursor: ns-resize;
+        background: #334155;
+        flex-shrink: 0;
+        transition: background 0.15s;
+      }
+      #panel-resize-handle:hover {
+        background: #475569;
+      }
 
-    .filter-tag {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 3px 9px;
-      border-radius: 12px;
-      font-size: 11px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-    }
+      .filter-tag {
+        background: #0f172a;
+        border: 1px solid #334155;
+        color: #94a3b8;
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        cursor: pointer;
+        user-select: none;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
 
-    .filter-tag:hover { border-color: #64748b; color: #e2e8f0; }
+      .filter-tag:hover {
+        border-color: #64748b;
+        color: #e2e8f0;
+      }
 
-    .filter-tag.active {
-      background: #1e40af;
-      border-color: #3b82f6;
-      color: #e2e8f0;
-    }
+      .filter-tag.active {
+        background: #1e40af;
+        border-color: #3b82f6;
+        color: #e2e8f0;
+      }
 
-    #sidebar-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
+      #sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+      }
 
-    #sidebar-content.empty {
-      color: #475569;
-      font-size: 13px;
-      padding-top: 24px;
-      text-align: center;
-    }
+      #sidebar-content.empty {
+        color: #475569;
+        font-size: 13px;
+        padding-top: 24px;
+        text-align: center;
+      }
 
-    .meta-row { margin-bottom: 14px; }
+      .meta-row {
+        margin-bottom: 14px;
+      }
 
-    .meta-label {
-      font-size: 10px;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 3px;
-    }
+      .meta-label {
+        font-size: 10px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 3px;
+      }
 
-    .meta-value { font-size: 13px; line-height: 1.5; }
+      .meta-value {
+        font-size: 13px;
+        line-height: 1.5;
+      }
 
-    .meta-value a { color: #60a5fa; text-decoration: none; }
-    .meta-value a:hover { text-decoration: underline; }
+      .meta-value a {
+        color: #60a5fa;
+        text-decoration: none;
+      }
+      .meta-value a:hover {
+        text-decoration: underline;
+      }
 
-    #legend {
-      padding: 14px 16px;
-      border-top: 1px solid #334155;
-    }
+      #legend {
+        padding: 14px 16px;
+        border-top: 1px solid #334155;
+      }
 
-    #legend h3 {
-      font-size: 10px;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 10px;
-    }
+      #legend h3 {
+        font-size: 10px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 10px;
+      }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 7px;
-      font-size: 12px;
-      color: #94a3b8;
-    }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 7px;
+        font-size: 12px;
+        color: #94a3b8;
+      }
 
-    .legend-line { width: 20px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+      .legend-line {
+        width: 20px;
+        height: 2px;
+        border-radius: 1px;
+        flex-shrink: 0;
+      }
 
-    .legend-sources {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #1e293b;
-      font-size: 12px;
-      color: #94a3b8;
-    }
+      .legend-sources {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #1e293b;
+        font-size: 12px;
+        color: #94a3b8;
+      }
 
-    .legend-diamond {
-      width: 12px;
-      height: 12px;
-      background: #334155;
-      border: 1px solid #475569;
-      transform: rotate(45deg);
-      flex-shrink: 0;
-    }
+      .legend-diamond {
+        width: 12px;
+        height: 12px;
+        background: #334155;
+        border: 1px solid #475569;
+        transform: rotate(45deg);
+        flex-shrink: 0;
+      }
 
-    #about-btn {
-      background: #1e3a5f;
-      border: 1px solid #3b82f6;
-      color: #93c5fd;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 0.03em;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-    }
-    #about-btn:hover {
-      background: #1d4ed8;
-      border-color: #60a5fa;
-      color: #e0f2fe;
-    }
+      #about-btn {
+        background: #1e3a5f;
+        border: 1px solid #3b82f6;
+        color: #93c5fd;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
+      #about-btn:hover {
+        background: #1d4ed8;
+        border-color: #60a5fa;
+        color: #e0f2fe;
+      }
 
-    #modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-    }
-    #modal-overlay.open { display: flex; }
+      #modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+      #modal-overlay.open {
+        display: flex;
+      }
 
-    #modal {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      width: min(680px, 90vw);
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
+      #modal {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        width: min(680px, 90vw);
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
 
-    #modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid #334155;
-      flex-shrink: 0;
-    }
+      #modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid #334155;
+        flex-shrink: 0;
+      }
 
-    #modal-header h2 {
-      font-size: 15px;
-      font-weight: 700;
-      color: #e2e8f0;
-      letter-spacing: 0.02em;
-    }
+      #modal-header h2 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #e2e8f0;
+        letter-spacing: 0.02em;
+      }
 
-    #modal-close {
-      background: none;
-      border: none;
-      color: #64748b;
-      font-size: 20px;
-      line-height: 1;
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    #modal-close:hover { background: #334155; color: #e2e8f0; }
+      #modal-close {
+        background: none;
+        border: none;
+        color: #64748b;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      #modal-close:hover {
+        background: #334155;
+        color: #e2e8f0;
+      }
 
-    #modal-body {
-      overflow-y: auto;
-      padding: 20px 24px;
-      font-size: 13.5px;
-      line-height: 1.7;
-      color: #cbd5e1;
-    }
+      #modal-body {
+        overflow-y: auto;
+        padding: 20px 24px;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: #cbd5e1;
+      }
 
-    #modal-body h3 {
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 20px 0 8px;
-    }
-    #modal-body h3:first-child { margin-top: 0; }
+      #modal-body h3 {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin: 20px 0 8px;
+      }
+      #modal-body h3:first-child {
+        margin-top: 0;
+      }
 
-    #modal-body p { margin-bottom: 10px; }
+      #modal-body p {
+        margin-bottom: 10px;
+      }
 
-    #modal-body code {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 4px;
-      padding: 1px 6px;
-      font-size: 12px;
-      color: #93c5fd;
-      font-family: "SFMono-Regular", Consolas, monospace;
-    }
+      #modal-body code {
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-size: 12px;
+        color: #93c5fd;
+        font-family: "SFMono-Regular", Consolas, monospace;
+      }
 
-    #modal-body ul {
-      padding-left: 20px;
-      margin-bottom: 10px;
-    }
-    #modal-body li { margin-bottom: 4px; }
-  </style>
-</head>
-<body>
-  <div id="graph-area">
-    <div id="toolbar">
-      <button id="about-btn" onclick="document.getElementById('modal-overlay').classList.add('open')">About this dashboard</button>
-      <button onclick="cy.fit(cy.nodes(), 40)">Fit</button>
-      <button onclick="cy.reset()">Reset</button>
+      #modal-body ul {
+        padding-left: 20px;
+        margin-bottom: 10px;
+      }
+      #modal-body li {
+        margin-bottom: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="graph-area">
+      <div id="toolbar">
+        <button
+          id="about-btn"
+          onclick="
+            document.getElementById('modal-overlay').classList.add('open')
+          "
+        >
+          About this dashboard
+        </button>
+        <button onclick="cy.fit(cy.nodes(), 40)">Fit</button>
+        <button onclick="cy.reset()">Reset</button>
+      </div>
+      <div id="cy"></div>
     </div>
-    <div id="cy"></div>
-  </div>
 
-  <div id="sidebar">
-    <div id="sidebar-header">Details</div>
-    <div id="filter-panel">
-      <h3>Filter by Tag</h3>
-      <input id="tag-search" type="text" placeholder="Search tags…">
-      <div id="filter-tags"></div>
-    </div>
-    <div id="panel-resize-handle"></div>
-    <div id="sidebar-content" class="empty">Click a node or edge</div>
-    <div id="legend">
-      <h3>Edge Types</h3>
-      <div class="legend-item"><div class="legend-line" style="background:#3b82f6"></div>samples from</div>
+    <div id="sidebar">
+      <div id="sidebar-header">Details</div>
+      <div id="filter-panel">
+        <h3>Filter by Tag</h3>
+        <input id="tag-search" type="text" placeholder="Search tags…" />
+        <div id="filter-tags"></div>
+      </div>
+      <div id="panel-resize-handle"></div>
+      <div id="sidebar-content" class="empty">Click a node or edge</div>
+      <div id="legend">
+        <h3>Edge Types</h3>
+        <div class="legend-item"><div class="legend-line" style="background:#3b82f6"></div>samples from</div>
       <div class="legend-item"><div class="legend-line" style="background:#f97316"></div>derived from</div>
       <div class="legend-item"><div class="legend-line" style="background:#a855f7"></div>uses method of</div>
       <div class="legend-item"><div class="legend-line" style="background:#64748b"></div>uses source</div>
       <div class="legend-item"><div class="legend-line" style="background:#f43f5e"></div>misc</div>
-      <div class="legend-sources">
-        <div class="legend-diamond"></div>
-        raw source (non-benchmark)
+        <div class="legend-sources">
+          <div class="legend-diamond"></div>
+          raw source (non-benchmark)
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="modal-overlay">
-    <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div id="modal-header">
-        <h2 id="modal-title">About This Dashboard</h2>
-        <button id="modal-close" aria-label="Close">&times;</button>
-      </div>
-      <div id="modal-body">
-        <h3>What is this?</h3>
-        <p>
-          This dashboard visualizes the <strong>lineage of tabular benchmark datasets</strong>
-          used in NLP and data management research. Each node is a dataset; edges show how
-          datasets relate to one another — whether one was sampled from another, extends it,
-          or shares methodology.
-        </p>
-        <p>
-          Click any node to see its metadata (year, venue, paper link, tags) in the right-hand
-          panel. Click an edge to see the relationship type and any notes. Use the tag filter to
-          highlight subsets of the graph.
-        </p>
+    <div id="modal-overlay">
+      <div
+        id="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <div id="modal-header">
+          <h2 id="modal-title">About This Dashboard</h2>
+          <button id="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div id="modal-body">
+          <h3>What is this?</h3>
+          <p>
+            This dashboard visualizes the
+            <strong>lineage of tabular benchmark datasets</strong>
+            used in NLP and data management research. Each node is a dataset;
+            edges show how datasets relate to one another — whether one was
+            sampled from another, extends it, or shares methodology. All data
+            and source code used to generate this dashboard are open and
+            available in this GitHub repo:
+            <a
+              href="https://github.com/inwonakng/table-corpus-lineage"
+              target="_blank"
+              >https://github.com/inwonakng/table-corpus-lineage</a
+            >.
+          </p>
+          <p>
+            Click any node to see its metadata (year, venue, paper link, tags)
+            in the right-hand panel. Click an edge to see the relationship type
+            and any notes. Use the tag filter to highlight subsets of the graph.
+          </p>
 
-        <h3>Organization philosophy</h3>
-        <p>
-          Data lives in two places:
-        </p>
-        <ul>
-          <li><code>datasets/&lt;name&gt;.yaml</code> — one file per benchmark dataset, containing
-              its metadata and any relations it introduces.</li>
-          <li><code>sources.yaml</code> — raw, non-benchmark sources (corpora, annotation pools,
-              external resources) that datasets draw from, plus any cross-cutting relations.</li>
-        </ul>
-        <p>
-          Keeping each dataset in its own file makes it easy to add, remove, or update a single
-          entry without touching anything else. Relations are stored with the dataset that
-          <em>introduces</em> the dependency, so provenance stays close to its source.
-        </p>
+          <h3>Organization philosophy</h3>
+          <p>Data lives in two places:</p>
+          <ul>
+            <li>
+              <code>datasets/&lt;name&gt;.yaml</code> — one file per benchmark
+              dataset, containing its metadata and any relations it introduces.
+            </li>
+            <li>
+              <code>sources.yaml</code> — raw, non-benchmark sources (corpora,
+              annotation pools, external resources) that datasets draw from,
+              plus any cross-cutting relations.
+            </li>
+          </ul>
+          <p>
+            Keeping each dataset in its own file makes it easy to add, remove,
+            or update a single entry without touching anything else. Relations
+            are stored with the dataset that
+            <em>introduces</em> the dependency, so provenance stays close to its
+            source.
+          </p>
 
-        <h3>Edge types</h3>
-        <ul>
-          <li><code>samples_from</code> — draws a subset of examples from the parent.</li>
-          <li><code>extends</code> — adds labels, splits, or tasks on top of the parent.</li>
-          <li><code>derived_from</code> — substantively re-processes or re-annotates the parent.</li>
-          <li><code>uses_method_of</code> — borrows a collection or annotation methodology.</li>
-          <li><code>uses_source</code> — pulls raw text/data from a non-benchmark source.</li>
-          <li><code>misc</code> — any other meaningful relationship.</li>
-        </ul>
+          <h3>Edge types</h3>
+          <ul>
+            <li>
+              <code>samples_from</code> — draws a subset of examples from the
+              parent.
+            </li>
+            <li>
+              <code>extends</code> — adds labels, splits, or tasks on top of the
+              parent.
+            </li>
+            <li>
+              <code>derived_from</code> — substantively re-processes or
+              re-annotates the parent.
+            </li>
+            <li>
+              <code>uses_method_of</code> — borrows a collection or annotation
+              methodology.
+            </li>
+            <li>
+              <code>uses_source</code> — pulls raw text/data from a
+              non-benchmark source.
+            </li>
+            <li><code>misc</code> — any other meaningful relationship.</li>
+          </ul>
 
-        <h3>Extending locally</h3>
-        <p>To add a new dataset, create <code>datasets/my_dataset.yaml</code>:</p>
-        <pre style="background:#0f172a;border:1px solid #334155;border-radius:6px;padding:12px 14px;font-size:12px;color:#93c5fd;font-family:'SFMono-Regular',Consolas,monospace;overflow-x:auto;line-height:1.6">dataset:
+          <h3>Extending locally</h3>
+          <p>
+            To add a new dataset, create <code>datasets/my_dataset.yaml</code>:
+          </p>
+          <pre
+            style="
+              background: #0f172a;
+              border: 1px solid #334155;
+              border-radius: 6px;
+              padding: 12px 14px;
+              font-size: 12px;
+              color: #93c5fd;
+              font-family: &quot;SFMono-Regular&quot;, Consolas, monospace;
+              overflow-x: auto;
+              line-height: 1.6;
+            "
+          >
+dataset:
   id: my_dataset
   label: "My Dataset"
   year: 2024
@@ -404,19 +511,22 @@
 relations:
   - from: parent_dataset
     to: my_dataset
-    type: extends</pre>
-        <p>
-          Then regenerate the dashboard by running <code>python generate.py</code>
-          (or <code>python generate.py -o my_output.html</code> for a custom filename).
-          The script reads every <code>*.yaml</code> in <code>datasets/</code> automatically
-          — no other configuration needed.
-        </p>
+    type: extends</pre
+          >
+          <p>
+            Then regenerate the dashboard by running
+            <code>python generate.py</code> (or
+            <code>python generate.py -o my_output.html</code> for a custom
+            filename). The script reads every <code>*.yaml</code> in
+            <code>datasets/</code> automatically — no other configuration
+            needed.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    const ELEMENTS = [
+    <script>
+      const ELEMENTS = [
   {
     "data": {
       "id": "ToTTo",
@@ -816,215 +926,225 @@ relations:
     }
   }
 ];
-    const EDGE_COLORS = {"samples_from": "#3b82f6", "extends": "#22c55e", "derived_from": "#f97316", "uses_method_of": "#a855f7", "uses_source": "#64748b", "misc": "#f43f5e"};
+      const EDGE_COLORS = {"samples_from": "#3b82f6", "extends": "#22c55e", "derived_from": "#f97316", "uses_method_of": "#a855f7", "uses_source": "#64748b", "misc": "#f43f5e"};
 
-    const cy = cytoscape({
-      container: document.getElementById('cy'),
-      elements: ELEMENTS,
-      style: [
-        {
-          selector: "node[nodeType='dataset']",
-          style: {
-            'background-color': '#1e40af',
-            'border-width': 1.5,
-            'border-color': '#3b82f6',
-            'label': 'data(label)',
-            'color': '#e2e8f0',
-            'font-size': '11px',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'text-wrap': 'wrap',
-            'text-max-width': '90px',
-            'shape': 'round-rectangle',
-            'width': 'label',
-            'height': 'label',
-            'padding': '10px',
-          }
+      const cy = cytoscape({
+        container: document.getElementById("cy"),
+        elements: ELEMENTS,
+        style: [
+          {
+            selector: "node[nodeType='dataset']",
+            style: {
+              "background-color": "#1e40af",
+              "border-width": 1.5,
+              "border-color": "#3b82f6",
+              label: "data(label)",
+              color: "#e2e8f0",
+              "font-size": "11px",
+              "text-valign": "center",
+              "text-halign": "center",
+              "text-wrap": "wrap",
+              "text-max-width": "90px",
+              shape: "round-rectangle",
+              width: "label",
+              height: "label",
+              padding: "10px",
+            },
+          },
+          {
+            selector: "node[nodeType='source']",
+            style: {
+              "background-color": "#1e293b",
+              "border-width": 1,
+              "border-color": "#475569",
+              label: "data(label)",
+              color: "#94a3b8",
+              "font-size": "10px",
+              "text-valign": "center",
+              "text-halign": "center",
+              "text-wrap": "wrap",
+              "text-max-width": "80px",
+              shape: "diamond",
+              width: "label",
+              height: "label",
+              padding: "14px",
+            },
+          },
+          {
+            selector: "node:selected",
+            style: { "border-color": "#f8fafc", "border-width": 2.5 },
+          },
+          {
+            selector: "edge",
+            style: {
+              width: 1.5,
+              "line-color": "data(color)",
+              "target-arrow-color": "data(color)",
+              "target-arrow-shape": "triangle",
+              "curve-style": "bezier",
+              "arrow-scale": 0.9,
+            },
+          },
+          {
+            selector: "edge:selected",
+            style: { width: 3 },
+          },
+        ],
+        layout: {
+          name: "dagre",
+          rankDir: "LR",
+          nodeSep: 50,
+          rankSep: 110,
+          padding: 40,
+          edgeSep: 10,
         },
-        {
-          selector: "node[nodeType='source']",
-          style: {
-            'background-color': '#1e293b',
-            'border-width': 1,
-            'border-color': '#475569',
-            'label': 'data(label)',
-            'color': '#94a3b8',
-            'font-size': '10px',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'text-wrap': 'wrap',
-            'text-max-width': '80px',
-            'shape': 'diamond',
-            'width': 'label',
-            'height': 'label',
-            'padding': '14px',
-          }
-        },
-        {
-          selector: 'node:selected',
-          style: { 'border-color': '#f8fafc', 'border-width': 2.5 }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': 1.5,
-            'line-color': 'data(color)',
-            'target-arrow-color': 'data(color)',
-            'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier',
-            'arrow-scale': 0.9,
-          }
-        },
-        {
-          selector: 'edge:selected',
-          style: { 'width': 3 }
-        },
-      ],
-      layout: {
-        name: 'dagre',
-        rankDir: 'LR',
-        nodeSep: 50,
-        rankSep: 110,
-        padding: 40,
-        edgeSep: 10,
-      },
-    });
-
-    // Tag filter
-    const activeTags = new Set();
-
-    const allTags = [...new Set(
-      ELEMENTS
-        .filter(e => e.data.nodeType === 'dataset')
-        .flatMap(e => e.data.tags || [])
-    )].sort();
-
-    const filterContainer = document.getElementById('filter-tags');
-    const filterPanel = document.getElementById('filter-panel');
-    const tagSearch = document.getElementById('tag-search');
-
-    if (allTags.length === 0) {
-      filterPanel.style.display = 'none';
-      document.getElementById('panel-resize-handle').style.display = 'none';
-    } else {
-      const tagBtns = new Map();
-      allTags.forEach(tag => {
-        const btn = document.createElement('span');
-        btn.className = 'filter-tag';
-        btn.textContent = tag;
-        btn.addEventListener('click', () => {
-          if (activeTags.has(tag)) {
-            activeTags.delete(tag);
-            btn.classList.remove('active');
-          } else {
-            activeTags.add(tag);
-            btn.classList.add('active');
-          }
-          applyFilter();
-        });
-        filterContainer.appendChild(btn);
-        tagBtns.set(tag, btn);
       });
 
-      tagSearch.addEventListener('input', () => {
-        const q = tagSearch.value.trim().toLowerCase();
-        tagBtns.forEach((btn, tag) => {
-          btn.style.display = tag.toLowerCase().includes(q) ? '' : 'none';
+      // Tag filter
+      const activeTags = new Set();
+
+      const allTags = [
+        ...new Set(
+          ELEMENTS.filter((e) => e.data.nodeType === "dataset").flatMap(
+            (e) => e.data.tags || [],
+          ),
+        ),
+      ].sort();
+
+      const filterContainer = document.getElementById("filter-tags");
+      const filterPanel = document.getElementById("filter-panel");
+      const tagSearch = document.getElementById("tag-search");
+
+      if (allTags.length === 0) {
+        filterPanel.style.display = "none";
+        document.getElementById("panel-resize-handle").style.display = "none";
+      } else {
+        const tagBtns = new Map();
+        allTags.forEach((tag) => {
+          const btn = document.createElement("span");
+          btn.className = "filter-tag";
+          btn.textContent = tag;
+          btn.addEventListener("click", () => {
+            if (activeTags.has(tag)) {
+              activeTags.delete(tag);
+              btn.classList.remove("active");
+            } else {
+              activeTags.add(tag);
+              btn.classList.add("active");
+            }
+            applyFilter();
+          });
+          filterContainer.appendChild(btn);
+          tagBtns.set(tag, btn);
         });
-      });
-    }
 
-    // Resizable filter panel
-    const resizeHandle = document.getElementById('panel-resize-handle');
-    let dragStartY = 0, dragStartH = 0;
-    resizeHandle.addEventListener('mousedown', e => {
-      dragStartY = e.clientY;
-      dragStartH = filterPanel.offsetHeight;
-      document.addEventListener('mousemove', onDrag);
-      document.addEventListener('mouseup', () => document.removeEventListener('mousemove', onDrag), { once: true });
-    });
-    function onDrag(e) {
-      const newH = Math.max(60, dragStartH + (e.clientY - dragStartY));
-      filterPanel.style.height = newH + 'px';
-    }
-
-    function applyFilter() {
-      if (activeTags.size === 0) {
-        cy.elements().show();
-        return;
+        tagSearch.addEventListener("input", () => {
+          const q = tagSearch.value.trim().toLowerCase();
+          tagBtns.forEach((btn, tag) => {
+            btn.style.display = tag.toLowerCase().includes(q) ? "" : "none";
+          });
+        });
       }
-      const matching = cy.nodes().filter(n => {
-        const tags = n.data('tags') || [];
-        return tags.some(t => activeTags.has(t));
-      });
-      let visible = cy.collection();
-      matching.forEach(n => {
-        visible = visible.union(n).union(n.predecessors()).union(n.successors());
-      });
-      cy.elements().hide();
-      visible.show();
-    }
 
-    // Sidebar
-    const content = document.getElementById('sidebar-content');
+      // Resizable filter panel
+      const resizeHandle = document.getElementById("panel-resize-handle");
+      let dragStartY = 0,
+        dragStartH = 0;
+      resizeHandle.addEventListener("mousedown", (e) => {
+        dragStartY = e.clientY;
+        dragStartH = filterPanel.offsetHeight;
+        document.addEventListener("mousemove", onDrag);
+        document.addEventListener(
+          "mouseup",
+          () => document.removeEventListener("mousemove", onDrag),
+          { once: true },
+        );
+      });
+      function onDrag(e) {
+        const newH = Math.max(60, dragStartH + (e.clientY - dragStartY));
+        filterPanel.style.height = newH + "px";
+      }
 
-    function row(label, value) {
-      if (value === undefined || value === null || value === '') return '';
-      return `<div class="meta-row">
+      function applyFilter() {
+        if (activeTags.size === 0) {
+          cy.elements().show();
+          return;
+        }
+        const matching = cy.nodes().filter((n) => {
+          const tags = n.data("tags") || [];
+          return tags.some((t) => activeTags.has(t));
+        });
+        let visible = cy.collection();
+        matching.forEach((n) => {
+          visible = visible
+            .union(n)
+            .union(n.predecessors())
+            .union(n.successors());
+        });
+        cy.elements().hide();
+        visible.show();
+      }
+
+      // Sidebar
+      const content = document.getElementById("sidebar-content");
+
+      function row(label, value) {
+        if (value === undefined || value === null || value === "") return "";
+        return `<div class="meta-row">
         <div class="meta-label">${label}</div>
         <div class="meta-value">${value}</div>
       </div>`;
-    }
-
-    cy.on('tap', 'node', e => {
-      const d = e.target.data();
-      content.className = '';
-      if (d.nodeType === 'dataset') {
-        const paper = d.url
-          ? `<a href="${d.url}" target="_blank">${d.url}</a>`
-          : '';
-        content.innerHTML =
-          row('Dataset', d.label) +
-          row('Year', d.year) +
-          row('Tags', (d.tags && d.tags.length) ? d.tags.join(', ') : '') +
-          row('Venue', d.venue) +
-          row('Paper', paper) +
-          row('Notes', d.notes);
-      } else {
-        content.innerHTML =
-          row('Source', d.label) +
-          row('Notes', d.notes);
       }
-    });
 
-    cy.on('tap', 'edge', e => {
-      const d = e.target.data();
-      const color = d.color;
-      const label = d.edgeType.replace(/_/g, ' ');
-      content.className = '';
-      content.innerHTML =
-        row('Relation', `<span style="color:${color}">${label}</span>`) +
-        row('From', d.source) +
-        row('To', d.target) +
-        row('Note', d.note);
-    });
+      cy.on("tap", "node", (e) => {
+        const d = e.target.data();
+        content.className = "";
+        if (d.nodeType === "dataset") {
+          const paper = d.url
+            ? `<a href="${d.url}" target="_blank">${d.url}</a>`
+            : "";
+          content.innerHTML =
+            row("Dataset", d.label) +
+            row("Year", d.year) +
+            row("Tags", d.tags && d.tags.length ? d.tags.join(", ") : "") +
+            row("Venue", d.venue) +
+            row("Paper", paper) +
+            row("Notes", d.notes);
+        } else {
+          content.innerHTML = row("Source", d.label) + row("Notes", d.notes);
+        }
+      });
 
-    cy.on('tap', e => {
-      if (e.target === cy) {
-        content.className = 'empty';
-        content.innerHTML = 'Click a node or edge';
-      }
-    });
+      cy.on("tap", "edge", (e) => {
+        const d = e.target.data();
+        const color = d.color;
+        const label = d.edgeType.replace(/_/g, " ");
+        content.className = "";
+        content.innerHTML =
+          row("Relation", `<span style="color:${color}">${label}</span>`) +
+          row("From", d.source) +
+          row("To", d.target) +
+          row("Note", d.note);
+      });
 
-    // Modal open/close
-    const overlay = document.getElementById('modal-overlay');
-    document.getElementById('modal-close').addEventListener('click', () => overlay.classList.remove('open'));
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) overlay.classList.remove('open');
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') overlay.classList.remove('open');
-    });
-  </script>
-</body>
+      cy.on("tap", (e) => {
+        if (e.target === cy) {
+          content.className = "empty";
+          content.innerHTML = "Click a node or edge";
+        }
+      });
+
+      // Modal open/close
+      const overlay = document.getElementById("modal-overlay");
+      document
+        .getElementById("modal-close")
+        .addEventListener("click", () => overlay.classList.remove("open"));
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.classList.remove("open");
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") overlay.classList.remove("open");
+      });
+    </script>
+  </body>
 </html>
